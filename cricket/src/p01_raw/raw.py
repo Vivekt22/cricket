@@ -56,5 +56,5 @@ def download_yaml_files(catalog: Catalog, params: Params) -> None:
 
 @flow(log_prints=True)
 def raw_flow(catalog: Catalog, params: Params) -> None:
-    clean_raw_folder(catalog, params)
+    clean_raw_folder(catalog)
     download_yaml_files(catalog, params)
