@@ -130,6 +130,6 @@ def main_extract_match_info_raw_data(new_match_ids: pl.DataFrame) -> pl.LazyFram
     return df_match_info
 
 
-@task
+@task(log_prints=True)
 def extract_match_info(new_match_ids: pl.DataFrame):
     main_extract_match_info_raw_data(new_match_ids)

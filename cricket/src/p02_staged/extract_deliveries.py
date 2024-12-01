@@ -91,9 +91,15 @@ def main_extract_deliveries_raw_data(new_match_ids: pl.DataFrame):
     else:
         df_deliveries = df_new_deliveries
 
+    df_deliveries.select("match_id").unique().write_parquet(Catalog.interims.processed_match_ids)
+    
     df_deliveries.write_parquet(Catalog.staged.deliveries)
 
 
-@task
+@task(log_prints=True)
 def extract_deliveries(new_match_ids: pl.DataFrame):
     main_extract_deliveries_raw_data(new_match_ids)
+
+
+df_deliveries = pl.read_parquet(Catalog.staged.deliveries)
+df_deliveries.select("match_id").unique().write_parquet(Catalog.interims.processed_match_ids)

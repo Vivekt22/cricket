@@ -3,7 +3,7 @@ from prefect import flow
 from cricket.src.p01_raw.raw import raw_flow
 from cricket.src.p02_staged.staged import staged_flow
 
-@flow
+@flow(log_prints=True)
 def main_run():
     raw_flow()
     staged_flow()

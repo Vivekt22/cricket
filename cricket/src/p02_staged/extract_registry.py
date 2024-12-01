@@ -59,6 +59,6 @@ def main_extract_registry_raw_data(new_match_ids: pl.DataFrame) -> pl.LazyFrame:
     df_registry.write_parquet(Catalog.staged.registry)
 
 
-@task
+@task(log_prints=True)
 def extract_registry(new_match_ids: pl.DataFrame):
     main_extract_registry_raw_data(new_match_ids)

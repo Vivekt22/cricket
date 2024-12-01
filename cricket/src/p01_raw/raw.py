@@ -11,14 +11,14 @@ from prefect import task, flow
 from cricket.catalog import Catalog
 from cricket.params import Params
 
-@task
+@task(log_prints=True)
 def clean_raw_folder() -> None:
     for file in Catalog.folder.raw.glob("*.yaml"):
         file.unlink()
     for file in Catalog.folder.raw.glob("*.txt"):
         file.unlink()
 
-@task
+@task(log_prints=True)
 def download_yaml_files() -> None:
     url = Params.cricsheet_url
     target_directory = Catalog.folder.raw
@@ -54,7 +54,7 @@ def download_yaml_files() -> None:
     df_raw_staged_match_ids.write_parquet(Catalog.interims.raw_match_ids)
 
 
-@flow
+@flow(log_prints=True)
 def raw_flow():
     clean_raw_folder()
     download_yaml_files()
