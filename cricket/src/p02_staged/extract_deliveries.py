@@ -1,6 +1,5 @@
 from pathlib import Path
 import yaml
-from multiprocessing import Pool, cpu_count
 
 import polars as pl
 from prefect import task, flow
@@ -69,8 +68,7 @@ def extract_delivery_details(file: Path):
         return None
 
 def extract_all_deliveries(raw_data_files):
-    with Pool(cpu_count()) as pool:
-        all_innings = pool.map(extract_delivery_details, raw_data_files)
+    all_innings = extract_delivery_details(raw_data_files)
     non_empty_dfs = [df for df in all_innings if df is not None]
     if non_empty_dfs:
         return pl.concat(non_empty_dfs)

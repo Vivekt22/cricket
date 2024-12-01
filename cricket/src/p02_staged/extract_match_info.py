@@ -1,7 +1,6 @@
 from pathlib import Path
 from datetime import date, datetime
 import yaml
-from multiprocessing import Pool, cpu_count
 
 import polars as pl
 from prefect import task, flow
@@ -84,8 +83,7 @@ def extract_match_info_details(file: Path):
         return None
 
 def extract_all_match_info(raw_data_files):
-    with Pool(cpu_count()) as pool:
-        all_match_info = pool.map(extract_match_info_details, raw_data_files)
+    all_match_info = extract_match_info_details(raw_data_files)
     non_empty_dfs = [df for df in all_match_info if df is not None]
     if non_empty_dfs:
         return pl.concat(non_empty_dfs)
