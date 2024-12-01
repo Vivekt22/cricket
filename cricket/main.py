@@ -17,5 +17,5 @@ def main_run(base_path: str):
 
 
 if __name__ == "__main__":
-    main_run("C:/Users/vivek/OneDrive/Documents/04 - My Projects/30 - Cricket/cricket")
+    main_run(base_path="C:/Users/vivek/OneDrive/Documents/04 - My Projects/30 - Cricket/cricket")
     
