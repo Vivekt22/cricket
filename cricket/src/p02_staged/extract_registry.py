@@ -39,8 +39,8 @@ def extract_all_registry(raw_data_files):
     else:
         return pl.DataFrame()
 
-def main_extract_registry_raw_data(new_match_ids: pl.DataFrame) -> pl.LazyFrame:
-    raw_data_directory = Catalog.folder.raw
+def main_extract_registry_raw_data(new_match_ids: pl.DataFrame, catalog: Catalog) -> None:
+    raw_data_directory = catalog.folder.raw
     raw_data_files = [
         raw_data_directory.joinpath(f"{file}.yaml")
         for file in
@@ -48,15 +48,15 @@ def main_extract_registry_raw_data(new_match_ids: pl.DataFrame) -> pl.LazyFrame:
     ]
     df_new_registry = extract_all_registry(raw_data_files)
 
-    if Catalog.staged.registry.is_file():
-        df_staged_registry = pl.read_parquet(Catalog.staged.registry)
+    if catalog.staged.registry.is_file():
+        df_staged_registry = pl.read_parquet(catalog.staged.registry)
         df_registry = pl.concat([df_new_registry, df_staged_registry])
     else:
         df_registry = df_new_registry
 
-    df_registry.write_parquet(Catalog.staged.registry)
+    df_registry.write_parquet(catalog.staged.registry)
 
 
 @task(log_prints=True)
-def extract_registry(new_match_ids: pl.DataFrame):
-    main_extract_registry_raw_data(new_match_ids)
+def extract_registry(new_match_ids: pl.DataFrame, catalog: Catalog):
+    main_extract_registry_raw_data(new_match_ids, catalog)

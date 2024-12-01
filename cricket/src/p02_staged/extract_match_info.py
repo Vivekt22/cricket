@@ -108,8 +108,8 @@ def extract_all_match_info(raw_data_files):
             'venue': pl.Utf8
         })
 
-def main_extract_match_info_raw_data(new_match_ids: pl.DataFrame) -> pl.LazyFrame:
-    raw_data_directory = Catalog.folder.raw
+def main_extract_match_info_raw_data(new_match_ids: pl.DataFrame, catalog: Catalog) -> pl.DataFrame:
+    raw_data_directory = catalog.folder.raw
     raw_data_files = [
         raw_data_directory.joinpath(f"{file}.yaml")
         for file in
@@ -117,17 +117,17 @@ def main_extract_match_info_raw_data(new_match_ids: pl.DataFrame) -> pl.LazyFram
     ]
     df_new_match_info = extract_all_match_info(raw_data_files)
 
-    if Catalog.staged.match_info.is_file():
-        df_staged_match_info = pl.read_parquet(Catalog.staged.match_info)
+    if catalog.staged.match_info.is_file():
+        df_staged_match_info = pl.read_parquet(catalog.staged.match_info)
         df_match_info = pl.concat([df_new_match_info, df_staged_match_info])
     else:
         df_match_info = df_new_match_info
 
-    df_match_info.write_parquet(Catalog.staged.match_info)
+    df_match_info.write_parquet(catalog.staged.match_info)
 
     return df_match_info
 
 
 @task(log_prints=True)
-def extract_match_info(new_match_ids: pl.DataFrame):
-    main_extract_match_info_raw_data(new_match_ids)
+def extract_match_info(new_match_ids: pl.DataFrame, catalog: Catalog) -> pl.DataFrame:
+    main_extract_match_info_raw_data(new_match_ids, catalog)

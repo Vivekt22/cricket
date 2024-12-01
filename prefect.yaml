@@ -26,7 +26,9 @@ deployments:
   concurrency_limit: null
   description: null
   entrypoint: cricket\main.py:main_run
-  parameters: {}
+  parameters: {
+    base_path: "C:\\Users\\vivek\\OneDrive\\Documents\\04 - My Projects\\30 - Cricket\\cricket\\cricket"
+  }
   work_pool:
     name: cricket-workpool
     work_queue_name: nulls

@@ -75,29 +75,25 @@ def extract_all_deliveries(raw_data_files):
     else:
         return pl.DataFrame()
 
-def main_extract_deliveries_raw_data(new_match_ids: pl.DataFrame):
-    raw_data_directory = Catalog.folder.raw
+def main_extract_deliveries_raw_data(new_match_ids: pl.DataFrame, catalog: Catalog):
+    raw_data_directory = catalog.folder.raw
     raw_data_files = [
         raw_data_directory.joinpath(f"{file}.yaml")
         for file in
         new_match_ids.select(pl.col("match_id")).to_series().to_list()
     ]
     df_new_deliveries = extract_all_deliveries(raw_data_files)
-    if Catalog.staged.deliveries.is_file():
-        df_staged_deliveries = pl.read_parquet(Catalog.staged.deliveries)
+    if catalog.staged.deliveries.is_file():
+        df_staged_deliveries = pl.read_parquet(catalog.staged.deliveries)
         df_deliveries = pl.concat([df_new_deliveries, df_staged_deliveries])
     else:
         df_deliveries = df_new_deliveries
 
-    df_deliveries.select("match_id").unique().write_parquet(Catalog.interims.processed_match_ids)
+    df_deliveries.select("match_id").unique().write_parquet(catalog.interims.processed_match_ids)
     
-    df_deliveries.write_parquet(Catalog.staged.deliveries)
+    df_deliveries.write_parquet(catalog.staged.deliveries)
 
 
 @task(log_prints=True)
-def extract_deliveries(new_match_ids: pl.DataFrame):
-    main_extract_deliveries_raw_data(new_match_ids)
-
-
-df_deliveries = pl.read_parquet(Catalog.staged.deliveries)
-df_deliveries.select("match_id").unique().write_parquet(Catalog.interims.processed_match_ids)
+def extract_deliveries(new_match_ids: pl.DataFrame, catalog: Catalog):
+    main_extract_deliveries_raw_data(new_match_ids, catalog)

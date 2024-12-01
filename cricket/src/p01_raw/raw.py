@@ -12,16 +12,16 @@ from cricket.catalog import Catalog
 from cricket.params import Params
 
 @task(log_prints=True)
-def clean_raw_folder() -> None:
-    for file in Catalog.folder.raw.glob("*.yaml"):
+def clean_raw_folder(catalog: Catalog) -> None:
+    for file in catalog.folder.raw.glob("*.yaml"):
         file.unlink()
-    for file in Catalog.folder.raw.glob("*.txt"):
+    for file in catalog.folder.raw.glob("*.txt"):
         file.unlink()
 
 @task(log_prints=True)
-def download_yaml_files() -> None:
-    url = Params.cricsheet_url
-    target_directory = Catalog.folder.raw
+def download_yaml_files(catalog: Catalog, params: Params) -> None:
+    url = params.cricsheet_url
+    target_directory = catalog.folder.raw
 
     zip_file_path = "all.zip"
     new_files_count = 0
@@ -51,10 +51,10 @@ def download_yaml_files() -> None:
         )
     )
 
-    df_raw_staged_match_ids.write_parquet(Catalog.interims.raw_match_ids)
+    df_raw_staged_match_ids.write_parquet(catalog.interims.raw_match_ids)
 
 
 @flow(log_prints=True)
-def raw_flow():
-    clean_raw_folder()
-    download_yaml_files()
+def raw_flow(catalog: Catalog, params: Params) -> None:
+    clean_raw_folder(catalog, params)
+    download_yaml_files(catalog, params)
